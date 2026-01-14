@@ -66,7 +66,6 @@ Executable can be found in [Releases](https://github.com/sibercat/IsleServerLaun
 ## ⚠️ Requirements
 
 * Windows 10/11 or Windows Server 2019+
-* .NET Desktop Runtime 10.0
 * Visual C++ Redistributable
 
 ---
