@@ -57,7 +57,7 @@ Executable can be found in [Releases](https://github.com/sibercat/IsleServerLaun
 
 ## 📦 Installation
 
-1. Download the latest release.
+1. Download the latest [Release](https://github.com/sibercat/IsleServerLauncher/releases).
 2. Run `IsleServerLauncher.exe` as Administrator (required for network/firewall configuration).
 3. Click **"Install Server"** on the dashboard to download the necessary files via SteamCMD.
 4. Configure your settings in the **Server Settings** tab.
