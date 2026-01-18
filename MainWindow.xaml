@@ -1,0 +1,686 @@
+<Window x:Class="IsleServerLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:IsleServerLauncher"
+        Title="The Isle Evrima Server Launcher (v1.0.1)" Height="850" Width="1000"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Icon="AppIcon.ico">
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Padding="5">
+            <MenuItem Header="Preferences" FontSize="14">
+                <MenuItem Header="Light Mode" x:Name="mnuLightMode" Click="mnuLightMode_Click" IsCheckable="True" IsChecked="True"/>
+                <MenuItem Header="Dark Mode" x:Name="mnuDarkMode" Click="mnuDarkMode_Click" IsCheckable="True"/>
+            </MenuItem>
+            <MenuItem Header="Presets" FontSize="14">
+                <MenuItem Header="Save Preset..." Click="mnuSavePreset_Click"/>
+                <MenuItem Header="Load Preset..." Click="mnuLoadPreset_Click"/>
+                <Separator/>
+                <MenuItem Header="Export Preset..." Click="mnuExportPreset_Click"/>
+                <MenuItem Header="Import Preset..." Click="mnuImportPreset_Click"/>
+                <MenuItem Header="Manage Presets..." Click="mnuManagePresets_Click"/>
+                <Separator/>
+                <MenuItem Header="Open Presets Folder" Click="mnuOpenPresetsFolder_Click"/>
+            </MenuItem>
+            <MenuItem Header="Mods" FontSize="14">
+                <MenuItem Header="AI Admin UI" Click="btnOpenAiAdminUi_Click"
+                          ToolTip="Open the AI Admin UI tool"/>
+            </MenuItem>
+            <MenuItem Header="Help" FontSize="14">
+                <MenuItem Header="Run Server Setup (Admin)" Click="btnServerSetup_Click"
+                          ToolTip="Configure Windows firewall, install VC++ runtime, and disable IE Enhanced Security"/>
+                <MenuItem Header="Network Optimization Fix (Admin)" Click="btnNetworkFix_Click"
+                          ToolTip="Fixes VirtIO/Packet Drops."/>
+                <MenuItem Header="Fix SSL Certificate Error (Admin)" Click="btnFixSSL_Click"
+                          ToolTip="Installs Amazon Root CA 1 to fix 'libcurl error 60' connecting to Epic Online Services."/>
+                <Separator/>
+                <MenuItem Header="Troubleshooting Guide" Click="btnTroubleshooting_Click"/>
+                <MenuItem Header="About" Click="btnAbout_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <Border DockPanel.Dock="Bottom" Padding="15" Background="{DynamicResource PanelBackgroundBrush}" 
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
+            <Button x:Name="btnSaveConfig" Content="SAVE ALL SETTINGS" 
+                    Click="btnSaveConfig_Click"
+                    FontSize="15" FontWeight="Bold" 
+                    Height="45" 
+                    Background="#2ECC71" Foreground="White"
+                    ToolTip="Saves settings from ALL tabs to the config file."
+                    Style="{StaticResource ModernButtonStyle}"/>
+        </Border>
+
+        <Grid Margin="15">
+            <TabControl BorderThickness="0" Background="Transparent">
+
+                <TabItem Header="Dashboard" FontSize="15" Height="45" Width="150">
+                    <Grid Background="{DynamicResource PanelBackgroundBrush}">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="The Isle: Evrima Server" 
+                                       FontSize="32" FontWeight="Bold" 
+                                       HorizontalAlignment="Center" Margin="0,0,0,30"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"/>
+
+                            <CheckBox x:Name="chkValidateFiles" Content="Validate Files on Start" 
+                                      HorizontalAlignment="Center" FontSize="14"
+                                      ToolTip="When checked, SteamCMD will verify and repair all server files on next start."
+                                      Margin="0,0,0,20" Foreground="{DynamicResource PrimaryTextBrush}"/>
+
+                            <Button x:Name="btnServerAction" 
+                                    FontSize="24" FontWeight="Bold"
+                                    Width="350" Height="80"
+                                    Click="btnServerAction_Click"
+                                    Background="{DynamicResource ButtonBackgroundBrush}" 
+                                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
+                                    Style="{StaticResource ModernButtonStyle}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Loading..." VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="btnRestart" 
+                                    Content="Restart Server" 
+                                    FontSize="18" FontWeight="Bold"
+                                    Width="350" Height="50"
+                                    Margin="0,15,0,0"
+                                    Click="btnRestart_Click"
+                                    IsEnabled="False"
+                                    Background="#E67E22" Foreground="White"
+                                    Style="{StaticResource ModernButtonStyle}"/>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,40,0,0">
+                                <Ellipse x:Name="elStatusLight" Width="25" Height="25" Margin="0,0,15,0" Stroke="Gray" StrokeThickness="1">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="Gray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=txtStatus}" Value="Status: Running">
+                                                    <Setter Property="Fill" Value="#2ECC71"/>
+                                                    <Setter Property="Effect">
+                                                        <Setter.Value>
+                                                            <DropShadowEffect Color="#2ECC71" BlurRadius="20" ShadowDepth="0"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                                 From="1.0" To="0.5" Duration="0:0:1.5"
+                                                                                 AutoReverse="True"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1.0" Duration="0:0:0.1"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Text, ElementName=txtStatus}" Value="Status: Stopped">
+                                                    <Setter Property="Fill" Value="#E74C3C"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+
+                                <TextBlock x:Name="txtStatus" 
+                                           Text="Status: Checking..." 
+                                           FontSize="20" Foreground="{DynamicResource SecondaryTextBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Server Settings" FontSize="15" Height="45" Width="150">
+                    <local:ServerSettingsView x:Name="serverSettingsView"/>
+                </TabItem>
+
+                <TabItem Header="Performance" FontSize="15" Height="45" Width="150">
+                    <Grid Background="{DynamicResource PanelBackgroundBrush}">
+                        <ScrollViewer>
+                            <StackPanel Margin="20">
+                                <GroupBox Header="World Streaming" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                    <StackPanel>
+                                        <CheckBox x:Name="chkDisableStreaming" Content="Disable World Partition Streaming (High RAM)" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBlock Text="⚠️ Only enable if you have 16GB+ RAM dedicated to the server." FontSize="11" Foreground="Orange"/>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <GroupBox Header="CPU &amp; Priority" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                    <StackPanel>
+                                        <TextBlock Text="Process Priority:" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <ComboBox x:Name="cmbPriority" Height="30" SelectedIndex="0" Width="200" HorizontalAlignment="Left" VerticalContentAlignment="Center">
+                                            <ComboBoxItem Content="Normal"/>
+                                            <ComboBoxItem Content="Above Normal"/>
+                                            <ComboBoxItem Content="High"/>
+                                        </ComboBox>
+
+                                        <CheckBox x:Name="chkUseAllCores" Content="Use All Available Cores" Margin="0,15,0,10" IsChecked="False" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBlock Text="Or Select Specific Cores:" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <ScrollViewer Height="120">
+                                            <WrapPanel x:Name="pnlCpuCores" Orientation="Horizontal"/>
+                                        </ScrollViewer>
+                                    </StackPanel>
+                                </GroupBox>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Automation" FontSize="15" Height="45" Width="150">
+                    <Grid Background="{DynamicResource PanelBackgroundBrush}">
+                        <TabControl Margin="10" BorderThickness="0" Background="Transparent">
+
+                            <TabItem Header="Stability" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Crash Detection" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="15">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkEnableCrashDetection" Content="Enable Monitor" Margin="0,5" IsChecked="True" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <CheckBox x:Name="chkAutoRestart" Content="Auto-Restart on Crash" Margin="0,5" IsEnabled="{Binding ElementName=chkEnableCrashDetection, Path=IsChecked}" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <DockPanel Margin="0,10">
+                                                    <TextBlock Text="Max Restarts:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <ComboBox x:Name="cmbMaxRestartAttempts" Width="80" HorizontalAlignment="Right" SelectedIndex="2" Height="30" VerticalContentAlignment="Center">
+                                                        <ComboBoxItem Content="1"/>
+                                                        <ComboBoxItem Content="3"/>
+                                                        <ComboBoxItem Content="5"/>
+                                                        <ComboBoxItem Content="10"/>
+                                                    </ComboBox>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Zombie Process Protection" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="15">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkEnableZombieCheck" Content="Enable Zombie Check" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Monitor server shutdown and force-kill if it doesn't respond within timeout"/>
+                                                <DockPanel Margin="0,10" IsEnabled="{Binding ElementName=chkEnableZombieCheck, Path=IsChecked}">
+                                                    <TextBlock Text="Force Kill Timeout (seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,10,0"/>
+                                                    <TextBox x:Name="txtZombieTimeout" Width="60" Text="60" Height="25" VerticalContentAlignment="Center" 
+                                                             ToolTip="How long to wait before force-killing unresponsive server (30-300 seconds)"/>
+                                                </DockPanel>
+                                                <TextBlock Text="⚠️ Only enable if experiencing zombie processes. May cause data corruption if timeout is too short." 
+                                                           FontSize="11" Foreground="Orange" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Schedules &amp; Backups" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Scheduled Restarts" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="15"
+                                                  IsEnabled="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}"
+                                                  ToolTipService.ShowOnDisabled="True">
+                                            <GroupBox.ToolTip>
+                                                <TextBlock>
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="Schedule automated restarts with optional warnings."/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}" Value="False">
+                                                                    <Setter Property="Text" Value="Requires RCON to be enabled."/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </GroupBox.ToolTip>
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkScheduledRestartEnabled" Content="Enable Schedule" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,10">
+                                                    <TextBlock Text="Interval (Hours): " VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Width="120"/>
+                                                    <ComboBox x:Name="cmbRestartInterval" Width="80" SelectedIndex="4" Height="30" VerticalContentAlignment="Center">
+                                                        <ComboBoxItem Content="1"/>
+                                                        <ComboBoxItem Content="2"/>
+                                                        <ComboBoxItem Content="4"/>
+                                                        <ComboBoxItem Content="6"/>
+                                                        <ComboBoxItem Content="12"/>
+                                                        <ComboBoxItem Content="24"/>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                                    <TextBlock Text="Warning (Mins): " VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Width="120"/>
+                                                    <ComboBox x:Name="cmbWarningMinutes" Width="80" SelectedIndex="2" Height="30" VerticalContentAlignment="Center">
+                                                        <ComboBoxItem Content="5"/>
+                                                        <ComboBoxItem Content="10"/>
+                                                        <ComboBoxItem Content="15"/>
+                                                        <ComboBoxItem Content="30"/>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                                <TextBlock x:Name="txtNextRestart" Text="Next restart: Not scheduled" FontSize="12" FontWeight="SemiBold" Foreground="#3498DB" Margin="0,15,0,5"/>
+
+                                                <TextBlock Text="Restart Message:" Margin="0,10,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="10"/>
+                                                        <ColumnDefinition Width="80"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox x:Name="txtRestartMessage" Height="35" VerticalContentAlignment="Center" Padding="5"/>
+                                                    <Button x:Name="btnTestAnnounce" Grid.Column="2" Content="Test" Click="btnTestAnnounce_Click" 
+                                                            Style="{StaticResource ModernButtonStyle}" Background="#3498DB" Foreground="White"/>
+                                                </Grid>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Maintenance Tasks" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="15"
+                                                  IsEnabled="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}"
+                                                  ToolTipService.ShowOnDisabled="True">
+                                            <GroupBox.ToolTip>
+                                                <TextBlock>
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="Automate corpse cleanup and world saves."/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}" Value="False">
+                                                                    <Setter Property="Text" Value="Requires RCON to be enabled."/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </GroupBox.ToolTip>
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkAutoWipeCorpses" Content="Auto Wipe Corpses" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <DockPanel Margin="0,5" IsEnabled="{Binding ElementName=chkAutoWipeCorpses, Path=IsChecked}">
+                                                    <TextBlock Text="Interval (Minutes):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtWipeInterval" Width="60" HorizontalAlignment="Right" Text="60" Height="25" VerticalContentAlignment="Center"/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5" IsEnabled="{Binding ElementName=chkAutoWipeCorpses, Path=IsChecked}">
+                                                    <TextBlock Text="Start Delay (Minutes):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtWipeDelay" Width="60" HorizontalAlignment="Right" Text="0" Height="25" VerticalContentAlignment="Center"/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5" IsEnabled="{Binding ElementName=chkAutoWipeCorpses, Path=IsChecked}">
+                                                    <TextBlock Text="Warning Message:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtWipeWarningMessage" Width="360" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="Use {minutes} for the countdown value."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5" IsEnabled="{Binding ElementName=chkAutoWipeCorpses, Path=IsChecked}">
+                                                    <TextBlock Text="Completion Message:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtWipeCompleteMessage" Width="360" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"/>
+                                                </DockPanel>
+
+                                                <Separator Margin="0,10"/>
+
+                                                <CheckBox x:Name="chkAutoRconSave" Content="Auto RCON Save (World Data)" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <DockPanel Margin="0,5" IsEnabled="{Binding ElementName=chkAutoRconSave, Path=IsChecked}">
+                                                    <TextBlock Text="Interval (Minutes):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtRconSaveInterval" Width="60" HorizontalAlignment="Right" Text="30" Height="25" VerticalContentAlignment="Center"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Backups" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="15">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkAutoBackupEnabled" Content="Enable Auto Backups" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <ComboBox x:Name="cmbBackupInterval" Margin="0,5" SelectedIndex="2" Height="30" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="Every 1 Hour"/>
+                                                    <ComboBoxItem Content="Every 3 Hours"/>
+                                                    <ComboBoxItem Content="Every 6 Hours"/>
+                                                    <ComboBoxItem Content="Every 12 Hours"/>
+                                                    <ComboBoxItem Content="Every 24 Hours"/>
+                                                </ComboBox>
+                                                <TextBlock x:Name="txtNextBackup" Text="Next backup: Not scheduled" FontSize="12" FontWeight="SemiBold" Foreground="#9B59B6" Margin="0,5,0,15"/>
+
+                                                <Grid Margin="0,10,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="15"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button x:Name="btnCreateBackup" Content="Create Backup" Click="btnCreateBackup_Click"
+                                                            Style="{StaticResource ModernButtonStyle}" Background="#3498DB" Foreground="White"/>
+
+                                                    <Button x:Name="btnRestoreBackup" Grid.Column="2" Content="Restore Backup" Click="btnRestoreBackup_Click" 
+                                                            Style="{StaticResource ModernButtonStyle}" Background="#E67E22" Foreground="White"/>
+                                                </Grid>
+                                                <Button x:Name="btnOpenBackupFolder" Content="Open Backups Folder" Margin="0,15,0,0" Click="btnOpenBackupFolder_Click"
+                                                        Style="{StaticResource ModernButtonStyle}"/>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Integrations" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Integrations" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="15">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkEnableDiscordWebhook" Content="Enable Discord Webhook (Status)" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <Grid Margin="0,5">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="10"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox x:Name="txtDiscordWebhookUrl" Height="35" VerticalContentAlignment="Center" Padding="5" IsEnabled="{Binding ElementName=chkEnableDiscordWebhook, Path=IsChecked}" ToolTip="Discord Webhook URL"/>
+                                                    <Button x:Name="btnTestWebhook" Grid.Column="2" Content="Test Webhook" Click="btnTestWebhook_Click"
+                                                            Style="{StaticResource ModernButtonStyle}" Background="#5865F2" Foreground="White"/>
+                                                </Grid>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                        </TabControl>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Administrator" FontSize="15" Height="45" Width="150">
+                    <Grid Background="{DynamicResource PanelBackgroundBrush}">
+                        <ScrollViewer>
+                            <StackPanel Margin="20">
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <GroupBox Header="Broadcast" Padding="15"
+                                              IsEnabled="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}"
+                                              ToolTipService.ShowOnDisabled="True">
+                                        <GroupBox.ToolTip>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="Send announcements to all players."/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}" Value="False">
+                                                                <Setter Property="Text" Value="Requires RCON to be enabled."/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </GroupBox.ToolTip>
+                                        <StackPanel>
+                                            <TextBox x:Name="txtAnnouncementMessage" Height="50" AcceptsReturn="True" TextWrapping="Wrap" Padding="5"/>
+                                            <Button x:Name="btnSendAnnouncement" Content="📢 Send Announcement" Height="35" Margin="0,10,0,0" Click="btnSendAnnouncement_Click" 
+                                                    Style="{StaticResource ModernButtonStyle}" Background="#9B59B6" Foreground="White"/>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <GroupBox Grid.Column="2" Header="Rcon Connection Test" Padding="15" MinWidth="220"
+                                              IsEnabled="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}"
+                                              ToolTipService.ShowOnDisabled="True">
+                                        <GroupBox.ToolTip>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="Test the RCON connection to the server."/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}" Value="False">
+                                                                <Setter Property="Text" Value="Requires RCON to be enabled."/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </GroupBox.ToolTip>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock x:Name="txtRconStatus" 
+                                                       Text="Status: Not Connected" 
+                                                       Foreground="Orange" 
+                                                       HorizontalAlignment="Center" 
+                                                       Margin="0,0,0,15" 
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="Wrap" 
+                                                       TextAlignment="Center"/>
+                                            <Button x:Name="btnTestRcon" Content="Connect" Click="btnTestRcon_Click"
+                                                    Style="{StaticResource ModernButtonStyle}" 
+                                                    Background="#3498DB" Foreground="White"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </Grid>
+
+                                <GroupBox Header="Player Management" Padding="15" Margin="0,0,0,15"
+                                          IsEnabled="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}"
+                                          ToolTipService.ShowOnDisabled="True">
+                                    <GroupBox.ToolTip>
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="Kick, ban, message, and inspect players."/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}" Value="False">
+                                                            <Setter Property="Text" Value="Requires RCON to be enabled."/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </GroupBox.ToolTip>
+                                    <StackPanel>
+                                        <Button x:Name="btnRefreshPlayers" Content="🔄 Refresh Player List" Click="btnRefreshPlayers_Click" Margin="0,0,0,10"
+                                                Style="{StaticResource ModernButtonStyle}" Background="#2ECC71" Foreground="White"/>
+
+                                        <ListBox x:Name="lstPlayers" Height="150" Margin="0,0,0,10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Padding="5"><Run Text="{Binding PlayerName}" FontWeight="Bold"/> <Run Text=" - "/> <Run Text="{Binding EosId}" FontFamily="Consolas" FontSize="11" Foreground="Gray"/></TextBlock>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="10"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="10"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="btnKickPlayer" Grid.Column="0" Content="👢 Kick" Click="btnKickPlayer_Click"
+                                                    Style="{StaticResource ModernButtonStyle}" Background="#E67E22" Foreground="White"/>
+                                            <Button x:Name="btnBanPlayer" Grid.Column="2" Content="🚫 Ban" Click="btnBanPlayer_Click" 
+                                                    Style="{StaticResource ModernButtonStyle}" Background="#E74C3C" Foreground="White"/>
+                                            <Button x:Name="btnMessagePlayer" Grid.Column="4" Content="💬 Message" Click="btnMessagePlayer_Click"
+                                                    Style="{StaticResource ModernButtonStyle}" Background="#9B59B6" Foreground="White"/>
+                                        </Grid>
+                                        <Button x:Name="btnGetPlayerData" Content="📊 Detailed Player Data" Margin="0,10,0,0" Click="btnGetPlayerData_Click"
+                                                Style="{StaticResource ModernButtonStyle}" Background="#3498DB" Foreground="White"/>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <GroupBox Header="Live Controls" Padding="15" Margin="0,0,0,15"
+                                          IsEnabled="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}"
+                                          ToolTipService.ShowOnDisabled="True">
+                                    <GroupBox.ToolTip>
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="Toggle server features while running."/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Source={x:Reference serverSettingsView}, Path=RconEnabled}" Value="False">
+                                                            <Setter Property="Text" Value="Requires RCON to be enabled."/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </GroupBox.ToolTip>
+                                    <StackPanel>
+                                        <UniformGrid Columns="2" Rows="3" Margin="0,0,0,15">
+                                            <Button x:Name="btnEnableGlobalChat" Content="Enable Global Chat" Margin="0,0,5,5" Click="btnEnableGlobalChat_Click" Style="{StaticResource ModernButtonStyle}" Background="#2ECC71" Foreground="White"/>
+                                            <Button x:Name="btnDisableGlobalChat" Content="Disable Global Chat" Margin="5,0,0,5" Click="btnDisableGlobalChat_Click" Style="{StaticResource ModernButtonStyle}" Background="#E74C3C" Foreground="White"/>
+
+                                            <Button x:Name="btnEnableHumans" Content="Enable Humans" Margin="0,5,5,5" Click="btnEnableHumans_Click" Style="{StaticResource ModernButtonStyle}" Background="#2ECC71" Foreground="White"/>
+                                            <Button x:Name="btnDisableHumans" Content="Disable Humans" Margin="5,5,0,5" Click="btnDisableHumans_Click" Style="{StaticResource ModernButtonStyle}" Background="#E74C3C" Foreground="White"/>
+
+                                            <Button x:Name="btnEnableAI" Content="Enable AI" Margin="0,5,5,0" Click="btnEnableAI_Click" Style="{StaticResource ModernButtonStyle}" Background="#2ECC71" Foreground="White"/>
+                                            <Button x:Name="btnDisableAI" Content="Disable AI" Margin="5,5,0,0" Click="btnDisableAI_Click" Style="{StaticResource ModernButtonStyle}" Background="#E74C3C" Foreground="White"/>
+                                        </UniformGrid>
+
+                                        <Grid Margin="0,0,0,15">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="10"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="10"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="btnWipeCorpses" Grid.Column="0" Content="Wipe Corpses" Click="btnWipeCorpses_Click" Style="{StaticResource ModernButtonStyle}" Background="#E67E22" Foreground="White"/>
+                                            <Button x:Name="btnEnableWhitelist" Grid.Column="2" Content="Whitelist On" Click="btnEnableWhitelist_Click" Style="{StaticResource ModernButtonStyle}" Background="#2ECC71" Foreground="White"/>
+                                            <Button x:Name="btnDisableWhitelist" Grid.Column="4" Content="Whitelist Off" Click="btnDisableWhitelist_Click" Style="{StaticResource ModernButtonStyle}" Background="#E74C3C" Foreground="White"/>
+                                        </Grid>
+
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15" HorizontalAlignment="Center">
+                                            <TextBlock Text="AI Density:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <TextBox x:Name="txtLiveAIDensity" Width="60" Text="1.0" VerticalContentAlignment="Center" Height="30" Padding="2"/>
+                                            <Button x:Name="btnSetAIDensity" Content="Set" Width="60" Margin="10,0,0,0" Click="btnSetAIDensity_Click" Style="{StaticResource ModernButtonStyle}" Background="#3498DB" Foreground="White"/>
+                                        </StackPanel>
+
+                                        <Grid Margin="0,10,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="15"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition Width="80"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Add EOS ID:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,10,0"/>
+                                                <TextBox x:Name="txtWhitelistId" Grid.Column="1" Height="35" VerticalContentAlignment="Center" FontFamily="Consolas"/>
+                                                <Button x:Name="btnAddToWhitelist" Grid.Column="3" Content="Add" Click="btnAddToWhitelist_Click" Style="{StaticResource ModernButtonStyle}" Background="#3498DB" Foreground="White"/>
+                                            </Grid>
+                                            <Button x:Name="btnRemoveFromWhitelist" Grid.Column="2" Content="Remove ID" Click="btnRemoveFromWhitelist_Click" Style="{StaticResource ModernButtonStyle}" Background="#E67E22" Foreground="White"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <GroupBox Header="RCON Output" Padding="10">
+                                    <StackPanel>
+                                        <TextBox x:Name="txtRconOutput" Height="100" IsReadOnly="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" Background="{DynamicResource InputBackgroundBrush}" Foreground="{DynamicResource InputTextBrush}" BorderThickness="0"/>
+                                        <Button x:Name="btnClearOutput" Content="Clear Output" HorizontalAlignment="Right" Width="110" Margin="0,10,0,0" Click="btnClearOutput_Click"
+                                                Style="{StaticResource ModernButtonStyle}"/>
+                                    </StackPanel>
+                                </GroupBox>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Chat Monitor" FontSize="15" Height="45" Width="150">
+                    <Grid Background="{DynamicResource PanelBackgroundBrush}">
+                        <DockPanel Margin="15">
+                            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,15">
+                                <Border CornerRadius="5" Padding="12" Margin="0,0,0,15">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="#FF2C3E50"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=chkEnableChatMonitor}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                                                                To="#2ECC71" 
+                                                                                Duration="0:0:0.3"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                                                                To="#FF2C3E50" 
+                                                                                Duration="0:0:0.3"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <StackPanel>
+                                        <CheckBox x:Name="chkEnableChatMonitor" 
+                                                  Content="Enable Chat Monitor" 
+                                                  FontSize="14" FontWeight="Bold" Foreground="White"
+                                                  Checked="chkEnableChatMonitor_Checked"
+                                                  Unchecked="chkEnableChatMonitor_Unchecked"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel x:Name="pnlChatControls" IsEnabled="{Binding ElementName=chkEnableChatMonitor, Path=IsChecked}">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                                        <CheckBox x:Name="chkMonitorGlobal" Content="Global" IsChecked="True" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}" VerticalContentAlignment="Center"/>
+                                        <CheckBox x:Name="chkMonitorSpatial" Content="Local" IsChecked="True" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}" VerticalContentAlignment="Center"/>
+                                        <CheckBox x:Name="chkMonitorAdmin" Content="Admin" IsChecked="True" Margin="0,0,30,0" Foreground="{DynamicResource PrimaryTextBrush}" VerticalContentAlignment="Center"/>
+
+                                        <TextBlock Text="Refresh:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <ComboBox x:Name="cmbChatRefreshInterval" Width="70" SelectedIndex="1" Height="30" VerticalContentAlignment="Center" SelectionChanged="cmbChatRefreshInterval_SelectionChanged">
+                                            <ComboBoxItem Content="1s"/>
+                                            <ComboBoxItem Content="2s"/>
+                                            <ComboBoxItem Content="5s"/>
+                                            <ComboBoxItem Content="10s"/>
+                                        </ComboBox>
+
+                                        <Button x:Name="btnPauseChat" Content="⏸ Pause" Width="91" Margin="15,0,10,0" Click="btnPauseChat_Click"
+                                                Style="{StaticResource ModernButtonStyle}" Background="#E67E22" Foreground="White"/>
+                                        <Button x:Name="btnClearChat" Content="🗑 Clear" Width="86" Click="btnClearChat_Click"
+                                                Style="{StaticResource ModernButtonStyle}"/>
+                                    </StackPanel>
+
+                                    <Grid Margin="0,5,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="100"/>
+                                        </Grid.ColumnDefinitions>
+                                        <CheckBox x:Name="chkEnableChatWebhook" Content="Discord Relay" Margin="0,0,15,0" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                        <TextBox x:Name="txtChatWebhookUrl" Grid.Column="1" Height="35" VerticalContentAlignment="Center" Padding="5" IsEnabled="{Binding ElementName=chkEnableChatWebhook, Path=IsChecked}" ToolTip="Discord Webhook URL"/>
+                                        <Button x:Name="btnTestChatWebhook" Grid.Column="3" Content="Test" Click="btnTestChatWebhook_Click"
+                                                Style="{StaticResource ModernButtonStyle}" Background="#5865F2" Foreground="White"/>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <RichTextBox x:Name="rtbChatMonitor" IsReadOnly="True" 
+                                         VerticalScrollBarVisibility="Auto" 
+                                         FontFamily="Consolas" FontSize="13"
+                                         Background="{DynamicResource InputBackgroundBrush}"
+                                         Foreground="{DynamicResource InputTextBrush}"
+                                         BorderBrush="{DynamicResource BorderBrush}"
+                                         BorderThickness="1" Padding="5">
+                                <FlowDocument>
+                                    <Paragraph>
+                                        <Run Text="Chat Monitor is disabled. Enable above to start monitoring." Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                    </Paragraph>
+                                </FlowDocument>
+                            </RichTextBox>
+                        </DockPanel>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <Border x:Name="bdrToast" Background="#2ECC71" CornerRadius="8" 
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" 
+                    Margin="0,0,0,30" Padding="25,12" Opacity="0" IsHitTestVisible="False">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.4" ShadowDepth="2"/>
+                </Border.Effect>
+                <TextBlock x:Name="txtToastMessage" Text="Action Successful" 
+                           Foreground="White" FontWeight="Bold" FontSize="15"/>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>
