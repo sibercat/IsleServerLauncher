@@ -1,0 +1,555 @@
+<UserControl x:Class="IsleServerLauncher.ServerSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Name="SettingsView">
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="Margin" Value="0,2,0,8"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource PanelBackgroundBrush}">
+        <TabControl Margin="10" BorderThickness="0" Background="Transparent" Grid.IsSharedSizeScope="True">
+
+                            <TabItem Header="General" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="General Identity" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <Grid Margin="0,0,0,10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="20"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="Server Name:" FontWeight="Normal" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtServerName" FontSize="13"
+                                                                 ToolTip="The name of your server as it will appear in the in-game server browser."/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="2">
+                                                        <TextBlock Text="Max Players:" FontWeight="Normal" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtMaxPlayers" FontSize="13" Width="100" HorizontalAlignment="Left"
+                                                                 ToolTip="The maximum number of player slots available on the server."/>
+                                                    </StackPanel>
+                                                </Grid>
+                                                <TextBlock Text="Discord Invite Link:" FontWeight="Normal" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <TextBox x:Name="txtDiscordInvite" FontSize="13" ToolTip="Link to your community Discord server."/>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Network" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <Grid Margin="0,0,0,10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="20"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="Game Port:" FontWeight="Normal" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtGamePort" Text="7777" Height="30" FontSize="13" Width="100" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                                                                 ToolTip="Port for game connections. QueryPort will automatically match this value."/>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="2">
+                                                        <TextBlock Text="Queue Port:" FontWeight="Normal" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtQueuePort" Text="10000" Height="30" FontSize="13" Width="100" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                                                                 ToolTip="Port used for the login queue system (Default: 10000)."/>
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <Expander Header="Advanced Launch Arguments" IsExpanded="False" Foreground="{DynamicResource PrimaryTextBrush}">
+                                                    <StackPanel Margin="0,10,0,0">
+                                                        <TextBlock Text="Custom Arguments:" FontWeight="Normal" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtCustomArgs" Height="30" FontSize="13" VerticalContentAlignment="Center"
+                                                                 ToolTip="Advanced: Additional command line flags like -MULTIHOME=1.2.3.4"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Security &amp; RCON" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkEnableRcon" Content="Enable RCON (Remote Console)" 
+                                                          Margin="0,0,0,10"
+                                                          IsChecked="{Binding RconEnabled, ElementName=SettingsView, Mode=TwoWay}"
+                                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enable remote console for server management"/>
+
+                                                <Grid IsEnabled="{Binding ElementName=chkEnableRcon, Path=IsChecked}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="10"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="10"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="RCON Password:" FontWeight="Normal" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtRconPass" Height="30" Margin="0,5,0,0" VerticalContentAlignment="Center"
+                                                                 ToolTip="The password required to authenticate with the RCON service."/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="2">
+                                                        <TextBlock Text="RCON Port:" FontWeight="Normal" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtRconPort" Height="30" Margin="0,5,0,0" VerticalContentAlignment="Center"
+                                                                 ToolTip="The TCP port used for RCON communication. Default is 8888."/>
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Column="4">
+                                                        <TextBlock Text="Server Password:" FontWeight="Normal" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtServerPass" Height="30" Margin="0,5,0,0" VerticalContentAlignment="Center"
+                                                                 ToolTip="If set, players will be prompted for this password before they can join the server."/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Gameplay" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Gameplay Rules" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <UniformGrid Columns="3">
+                                                <CheckBox x:Name="chkQueueEnabled" Content="Enable Queue" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the login queue system to manage server capacity."/>
+                                                <CheckBox x:Name="chkHumans" Content="Enable Humans" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Allows players to select and spawn as human characters."/>
+                                                <CheckBox x:Name="chkGlobalChat" Content="Global Chat" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables a chat channel that is visible to all players regardless of distance."/>
+                                                <CheckBox x:Name="chkMutations" Content="Mutations" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the mutation system, allowing dinosaurs to gain unique traits."/>
+                                                <CheckBox x:Name="chkMigration" Content="Migration Zones" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the migration system, which moves food and water resources around the map."/>
+                                                <CheckBox x:Name="chkFallDamage" Content="Fall Damage" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="If enabled, dinosaurs will take damage when falling from heights."/>
+                                                <CheckBox x:Name="chkPlants" Content="Spawn Plants" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the natural spawning of edible plants across the map."/>
+                                            </UniformGrid>
+                                        </GroupBox>
+
+                                        <Grid Margin="0,0,0,15">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="20"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <GroupBox Grid.Column="0" Header="Environment" FontSize="14" FontWeight="Bold" Padding="10">
+                                                <StackPanel>
+                                                    <DockPanel Margin="0,5">
+                                                        <TextBlock Text="Day Length (min):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtDayLength" Width="60" HorizontalAlignment="Right" Text="45" Height="25" VerticalContentAlignment="Center"
+                                                                 ToolTip="The duration of the daylight cycle in real-world minutes."/>
+                                                    </DockPanel>
+                                                    <DockPanel Margin="0,5">
+                                                        <TextBlock Text="Night Length (min):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtNightLength" Width="60" HorizontalAlignment="Right" Text="20" Height="25" VerticalContentAlignment="Center"
+                                                                 ToolTip="The duration of the night cycle in real-world minutes."/>
+                                                    </DockPanel>
+                                                    <CheckBox x:Name="chkDynamicWeather" Content="Dynamic Weather" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Enables changing weather conditions like rain, fog, and storms."/>
+                                                </StackPanel>
+                                            </GroupBox>
+                                            
+                                            <GroupBox Grid.Column="2" Header="Multipliers" FontSize="14" FontWeight="Bold" Padding="10">
+                                                <StackPanel>
+                                                    <DockPanel Margin="0,5">
+                                                        <TextBlock Text="Growth:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtGrowth" Width="60" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"
+                                                                 ToolTip="Multiplier for how fast dinosaurs grow. Higher values result in faster growth."/>
+                                                    </DockPanel>
+                                                    <DockPanel Margin="0,5">
+                                                        <TextBlock Text="Decay:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtDecay" Width="60" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"
+                                                                 ToolTip="Multiplier for how fast corpses disappear. Higher values result in faster decay."/>
+                                                    </DockPanel>
+                                                    <DockPanel Margin="0,5">
+                                                        <TextBlock Text="Migration (s):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        <TextBox x:Name="txtMigrationTime" Width="60" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"
+                                                                 ToolTip="The interval in seconds between migration zone updates."/>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </GroupBox>
+                                        </Grid>
+
+                                        <GroupBox Header="Mass Migration" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkEnableMassMigration" Content="Enable Mass Migration" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables large-scale migration events that affect multiple species."/>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Mass Migration Time (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtMassMigrationTime" Width="100" HorizontalAlignment="Right" Text="43200" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The interval in seconds between mass migration events."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Mass Migration Disable Time (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtMassMigrationDisableTime" Width="100" HorizontalAlignment="Right" Text="7200" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The duration in seconds for which a mass migration event remains active."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Species Migration Time (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtSpeciesMigrationTime" Width="100" HorizontalAlignment="Right" Text="10800" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The interval in seconds for species-specific migration updates."/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Advanced" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Region Spawning" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkUseRegionSpawning" Content="Enable Region Spawning" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Allows players to choose specific regions of the map to spawn in."/>
+                                                <CheckBox x:Name="chkUseRegionSpawnCooldown" Content="Enable Region Spawn Cooldown" Margin="0,5"
+                                                          IsEnabled="{Binding ElementName=chkUseRegionSpawning, Path=IsChecked}"
+                                                          Foreground="{DynamicResource PrimaryTextBrush}" ToolTip="Prevents players from spawning in the same region repeatedly."/>
+                                                <DockPanel Margin="0,5" IsEnabled="{Binding ElementName=chkUseRegionSpawnCooldown, Path=IsChecked}">
+                                                    <TextBlock Text="Region Cooldown (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtRegionSpawnCooldown" Width="80" HorizontalAlignment="Right" Text="30" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The cooldown time in seconds before a player can reuse a spawn region."/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Plants and Replay" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Plant Spawn Multiplier:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtPlantSpawnMultiplier" Width="80" HorizontalAlignment="Right" Text="1" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="Multiplier for the density of plant spawns. 1.0 is default."/>
+                                                </DockPanel>
+                                                <CheckBox x:Name="chkAllowRecordingReplay" Content="Allow Recording Replay" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the in-game replay recording feature for players."/>
+                                                <CheckBox x:Name="chkEnableDiets" Content="Enable Diets" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the diet system, requiring players to eat specific foods for growth buffs."/>
+                                                <CheckBox x:Name="chkEnablePatrolZones" Content="Enable Patrol Zones" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables specific zones where AI dinosaurs will patrol."/>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Weather" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Min Weather Interval (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtMinWeatherVariationInterval" Width="100" HorizontalAlignment="Right" Text="600" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The minimum time in seconds between weather changes."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Max Weather Interval (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtMaxWeatherVariationInterval" Width="100" HorizontalAlignment="Right" Text="900" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The maximum time in seconds between weather changes."/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Queue" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Join Timeout (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtQueueJoinTimeoutSeconds" Width="80" HorizontalAlignment="Right" Text="30" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="How long the server waits for a player to join from the queue before timing out."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Heartbeat Interval (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtQueueHeartbeatIntervalSeconds" Width="80" HorizontalAlignment="Right" Text="8" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="How often the server checks if a queued player is still connected."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Heartbeat Timeout (Seconds):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtQueueHeartbeatTimeoutSeconds" Width="80" HorizontalAlignment="Right" Text="5" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="How long to wait for a heartbeat response before timing out a queued player."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Heartbeat Max Misses:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtQueueHeartbeatMaxMisses" Width="80" HorizontalAlignment="Right" Text="2" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The number of missed heartbeats allowed before a player is removed from the queue."/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Dinosaurs &amp; AI" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="AI Settings" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkSpawnAI" Content="Spawn AI" Margin="0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Enables the spawning of AI-controlled dinosaurs."/>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="AI Density:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtAIDensity" Width="60" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="Controls the overall number of AI entities on the map. 1.0 is default."/>
+                                                </DockPanel>
+                                                <DockPanel Margin="0,5">
+                                                    <TextBlock Text="Spawn Interval (s):" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <TextBox x:Name="txtAISpawn" Width="60" HorizontalAlignment="Right" Height="25" VerticalContentAlignment="Center"
+                                                             ToolTip="The interval in seconds between AI spawn attempts."/>
+                                                 </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Allowed Dinosaurs" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <DockPanel>
+                                                <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox x:Name="txtDinoSearch" Tag="Search Dinosaurs..." 
+                                                             TextChanged="txtDinoSearch_TextChanged" 
+                                                             Height="28" VerticalContentAlignment="Center" Padding="5,0"
+                                                             ToolTip="Type here to filter the list of playable dinosaurs."/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                                                        <Button Content="All" Click="btnDinoSelectAll_Click" Width="50" Style="{StaticResource ModernButtonStyle}" Margin="0,0,5,0"/>
+                                                        <Button Content="None" Click="btnDinoSelectNone_Click" Width="70" Style="{StaticResource ModernButtonStyle}"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                                <ListBox x:Name="lstDinos" Height="220" SelectionMode="Multiple" FontSize="12"
+                                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemContainerStyle>
+                                                        <Style TargetType="ListBoxItem">
+                                                            <Setter Property="IsSelected" Value="{Binding IsEnabled, Mode=TwoWay}"/>
+                                                            <Setter Property="Margin" Value="0,0,10,5"/>
+                                                        </Style>
+                                                    </ListBox.ItemContainerStyle>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox Content="{Binding Name}" IsChecked="{Binding IsEnabled, Mode=TwoWay}" Width="140" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </DockPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="Disallowed AI" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Top" Text="Disable specific AI spawns (check to disallow):" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,8"/>
+                                                <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBox x:Name="txtAiSearch" Tag="Search AI..." 
+                                                             TextChanged="txtAiSearch_TextChanged" 
+                                                             Height="28" VerticalContentAlignment="Center" Padding="5,0"
+                                                             ToolTip="Type here to filter the list of AI types to disable."/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                                                        <Button Content="All" Click="btnAiSelectAll_Click" Width="50" Style="{StaticResource ModernButtonStyle}" Margin="0,0,5,0"/>
+                                                        <Button Content="None" Click="btnAiSelectNone_Click" Width="70" Style="{StaticResource ModernButtonStyle}"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                                <ListBox x:Name="lstDisallowedAI" Height="140" SelectionMode="Multiple" FontSize="12"
+                                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemContainerStyle>
+                                                        <Style TargetType="ListBoxItem">
+                                                            <Setter Property="IsSelected" Value="{Binding IsEnabled, Mode=TwoWay}"/>
+                                                            <Setter Property="Margin" Value="0,0,10,5"/>
+                                                        </Style>
+                                                    </ListBox.ItemContainerStyle>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox Content="{Binding Name}" IsChecked="{Binding IsEnabled, Mode=TwoWay}" Width="160" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </DockPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Access Control" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Access Control &amp; IDs" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <TextBlock Text="Admin Steam IDs (One per line):" FontWeight="Bold" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <TextBox x:Name="txtAdminSteamIds" Height="80" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" Margin="0,0,0,15"
+                                                         ToolTip="Enter Steam64 IDs (one per line) of users who should have administrator powers."/>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                    <CheckBox x:Name="chkWhitelist" Content="Enable " Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="When enabled, only players whose Steam64 IDs are in the whitelist can join."/>
+                                                    <TextBlock Text="WhiteList IDs (One per line):" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                </StackPanel>
+
+                                                <TextBlock Text="Steam64 IDs to whitelist on the server" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,5"/>
+                                                <TextBox x:Name="txtWhitelistIds" Height="80" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" Margin="0,0,0,15"
+                                                         ToolTip="Enter Steam64 IDs (one per line) of players allowed to join when the whitelist is active."/>
+
+                                                <TextBlock Text="VIP IDs (One per line):" FontWeight="Bold" Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                <TextBlock Text="Steam64 IDs that skip the queue when server is full" FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,5"/>
+                                                <TextBox x:Name="txtVipIds" Height="80" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas"
+                                                         ToolTip="Enter Steam64 IDs (one per line) of players who should skip the login queue."/>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <TabItem Header="Debugging" FontSize="13">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="10">
+                                        <GroupBox Header="Engine Logging" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <CheckBox x:Name="chkEnableLogRedpointEOSVerbose"
+                                                          Content="Enable Verbose EOS Logs (LogRedpointEOS)"
+                                                          Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Adds LogRedpointEOS=Verbose to [Core.Log] for EOS diagnostics."/>
+                                                <CheckBox x:Name="chkEnableLogOnlineVerbose"
+                                                          Content="Enable Verbose Online Logs (LogOnline)"
+                                                          Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Adds LogOnline=Verbose to [Core.Log] for online subsystem logs."/>
+                                                <CheckBox x:Name="chkEnableLogOnlineGameVerbose"
+                                                          Content="Enable Verbose Online Game Logs (LogOnlineGame)"
+                                                          Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Adds LogOnlineGame=Verbose to [Core.Log] for session/party matchmaking logs."/>
+                                                <CheckBox x:Name="chkEnableLogNetVerbose"
+                                                          Content="Enable Verbose Network Logs (LogNet)"
+                                                          Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Adds LogNet=Verbose to [Core.Log] for network replication and connection logs."/>
+                                                <CheckBox x:Name="chkEnableLogNetTrafficVerbose"
+                                                          Content="Enable Verbose Network Traffic Logs (LogNetTraffic)"
+                                                          Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Adds LogNetTraffic=Verbose to [Core.Log] for packet-level traffic logs."/>
+                                                <CheckBox x:Name="chkEnableLogReplicationGraphVerbose"
+                                                          Content="Enable Verbose Replication Graph Logs (LogReplicationGraph)"
+                                                          Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                          ToolTip="Adds LogReplicationGraph=Verbose to [Core.Log] for replication graph diagnostics."/>
+                                                <TextBlock Text="These settings add Core.Log entries to Engine.ini for troubleshooting."
+                                                           FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                        <GroupBox Header="The Isle Logging" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Padding="10">
+                                            <StackPanel>
+                                                <UniformGrid Columns="2" Rows="11">
+                                                    <CheckBox x:Name="chkEnableLogTheIsleVerbose"
+                                                              Content="LogTheIsle"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsle=Verbose to [Core.Log] for general server logs."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleAdminVerbose"
+                                                              Content="LogTheIsleAdmin"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleAdmin=Verbose to [Core.Log] for admin actions and permissions."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleAIVerbose"
+                                                              Content="LogTheIsleAI"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleAI=Verbose to [Core.Log] for AI spawns and behavior."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleAnimInstanceVerbose"
+                                                              Content="LogTheIsleAnimInstance"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleAnimInstance=Verbose to [Core.Log] for animation updates."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleAudioVerbose"
+                                                              Content="LogTheIsleAudio"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleAudio=Verbose to [Core.Log] for sound and voice events."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleAuthVerbose"
+                                                              Content="LogTheIsleAuth"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleAuth=Verbose to [Core.Log] for authentication and login."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleCharacterVerbose"
+                                                              Content="LogTheIsleCharacter"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleCharacter=Verbose to [Core.Log] for character state changes."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleCharacterMovementVerbose"
+                                                              Content="LogTheIsleCharacterMovement"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleCharacterMovement=Verbose to [Core.Log] for movement and physics."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleDatabaseVerbose"
+                                                              Content="LogTheIsleDatabase"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleDatabase=Verbose to [Core.Log] for persistence and data access."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleEnvironmentVerbose"
+                                                              Content="LogTheIsleEnvironment"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleEnvironment=Verbose to [Core.Log] for weather and environment systems."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleGameVerbose"
+                                                              Content="LogTheIsleGame"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleGame=Verbose to [Core.Log] for core game flow and rules."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleNetworkVerbose"
+                                                              Content="LogTheIsleNetwork"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleNetwork=Verbose to [Core.Log] for gameplay network events."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleServerVerbose"
+                                                              Content="LogTheIsleServer"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleServer=Verbose to [Core.Log] for server lifecycle and state."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIslePlayerControllerVerbose"
+                                                              Content="LogTheIslePlayerController"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIslePlayerController=Verbose to [Core.Log] for player controller events."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleUIVerbose"
+                                                              Content="LogTheIsleUI"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleUI=Verbose to [Core.Log] for UI and admin interface events."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleWorldVerbose"
+                                                              Content="LogTheIsleWorld"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleWorld=Verbose to [Core.Log] for world loading and streaming."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleJoinDataVerbose"
+                                                              Content="LogTheIsleJoinData"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleJoinData=Verbose to [Core.Log] for player join handshake details."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleChatDataVerbose"
+                                                              Content="LogTheIsleChatData"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleChatData=Verbose to [Core.Log] for chat monitor output."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleKillDataVerbose"
+                                                              Content="LogTheIsleKillData"
+                                                              Margin="0,0,10,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleKillData=Verbose to [Core.Log] for kill and death events."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleCommandDataVerbose"
+                                                              Content="LogTheIsleCommandData"
+                                                              Margin="0,0,0,5" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleCommandData=Verbose to [Core.Log] for admin command parsing."/>
+                                                    <CheckBox x:Name="chkEnableLogTheIsleAntiCheatVerbose"
+                                                              Content="LogTheIsleAntiCheat"
+                                                              Margin="0,0,10,0" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                              ToolTip="Adds LogTheIsleAntiCheat=Verbose to [Core.Log] for anti-cheat telemetry."/>
+                                                </UniformGrid>
+                                                <TextBlock Text="Use sparingly: these can produce very large log files."
+                                                           FontSize="11" Foreground="{DynamicResource SecondaryTextBrush}"/>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                        </TabControl>
+                    </Grid>
+</UserControl>
