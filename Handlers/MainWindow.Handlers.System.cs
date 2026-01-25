@@ -101,7 +101,65 @@ namespace IsleServerLauncher
 
         private void btnAbout_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("The Isle Evrima Server Launcher\nVersion: 1.0.1\n\nCreated by: Sibercat.", "About");
+            var aboutWindow = new Window
+            {
+                Title = "About",
+                Width = 350,
+                Height = 220,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = this,
+                ResizeMode = ResizeMode.NoResize,
+                WindowStyle = WindowStyle.ToolWindow
+            };
+
+            var stackPanel = new StackPanel { Margin = new Thickness(20) };
+
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = "The Isle Evrima Server Launcher",
+                FontWeight = FontWeights.Bold,
+                FontSize = 14,
+                Margin = new Thickness(0, 0, 0, 5)
+            });
+
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = "Version: 1.0.1",
+                Margin = new Thickness(0, 0, 0, 10)
+            });
+
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = "Created by: Sibercat.",
+                Margin = new Thickness(0, 0, 0, 10)
+            });
+
+            var linkTextBlock = new TextBlock { Margin = new Thickness(0, 0, 0, 10) };
+            linkTextBlock.Inlines.Add(new Run("GitHub: "));
+            var hyperlink = new Hyperlink(new Run("https://github.com/sibercat/The-Isle-Evrima-Server-Launcher"))
+            {
+                NavigateUri = new Uri("https://github.com/sibercat/The-Isle-Evrima-Server-Launcher")
+            };
+            hyperlink.RequestNavigate += (s, args) =>
+            {
+                Process.Start(new ProcessStartInfo(args.Uri.AbsoluteUri) { UseShellExecute = true });
+                args.Handled = true;
+            };
+            linkTextBlock.Inlines.Add(hyperlink);
+            stackPanel.Children.Add(linkTextBlock);
+
+            var okButton = new Button
+            {
+                Content = "OK",
+                Width = 75,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 10, 0, 0)
+            };
+            okButton.Click += (s, args) => aboutWindow.Close();
+            stackPanel.Children.Add(okButton);
+
+            aboutWindow.Content = stackPanel;
+            aboutWindow.ShowDialog();
         }
 
         private async void btnTestAnnounce_Click(object sender, RoutedEventArgs e)
