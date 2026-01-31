@@ -127,7 +127,7 @@ namespace IsleServerLauncher
             var dialog = new Window { Title = $"Kick {player.PlayerName}", Width = 350, Height = 180, WindowStartupLocation = WindowStartupLocation.CenterScreen };
             var stack = new StackPanel { Margin = new Thickness(10) };
             stack.Children.Add(new TextBlock { Text = "Reason:", FontWeight = FontWeights.Bold });
-            var txtReason = new TextBox { Text = "Rule Violation", Margin = new Thickness(0, 5, 0, 10), Height = 25 };
+            var txtReason = new System.Windows.Controls.TextBox { Text = "Rule Violation", Margin = new Thickness(0, 5, 0, 10), Height = 25 };
             stack.Children.Add(txtReason);
 
             var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
@@ -164,11 +164,11 @@ namespace IsleServerLauncher
             stack.Children.Add(new TextBlock { Text = $"Banning: {player.PlayerName}", Foreground = Brushes.Red, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 10) });
 
             stack.Children.Add(new TextBlock { Text = "Reason:" });
-            var txtReason = new TextBox { Text = "Rule Violation", Margin = new Thickness(0, 2, 0, 10), Height = 25 };
+            var txtReason = new System.Windows.Controls.TextBox { Text = "Rule Violation", Margin = new Thickness(0, 2, 0, 10), Height = 25 };
             stack.Children.Add(txtReason);
 
             stack.Children.Add(new TextBlock { Text = "Duration (Minutes, 0 = Permanent):" });
-            var txtDuration = new TextBox { Text = "0", Margin = new Thickness(0, 2, 0, 10), Height = 25 };
+            var txtDuration = new System.Windows.Controls.TextBox { Text = "0", Margin = new Thickness(0, 2, 0, 10), Height = 25 };
             stack.Children.Add(txtDuration);
 
             var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
@@ -203,7 +203,7 @@ namespace IsleServerLauncher
             var dialog = new Window { Title = $"Message {player.PlayerName}", Width = 350, Height = 180, WindowStartupLocation = WindowStartupLocation.CenterScreen };
             var stack = new StackPanel { Margin = new Thickness(10) };
             stack.Children.Add(new TextBlock { Text = "Enter Message:", FontWeight = FontWeights.Bold });
-            var txtMessage = new TextBox { Text = "", Margin = new Thickness(0, 5, 0, 10), Height = 25 };
+            var txtMessage = new System.Windows.Controls.TextBox { Text = "", Margin = new Thickness(0, 5, 0, 10), Height = 25 };
             stack.Children.Add(txtMessage);
 
             var btnPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
