@@ -9,6 +9,9 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Reflection;
+using System.Text.Json;
 
 namespace IsleServerLauncher
 {
@@ -16,6 +19,9 @@ namespace IsleServerLauncher
     // System setup handlers
 
     {
+        private const string GitHubLatestReleaseApi = "https://api.github.com/repos/sibercat/The-Isle-Evrima-Server-Launcher/releases/latest";
+        private const string GitHubReleasesPage = "https://github.com/sibercat/The-Isle-Evrima-Server-Launcher/releases";
+        private static readonly HttpClient _httpClient = new HttpClient();
         // SYSTEM SETUP HANDLERS
         // ==========================================
 
@@ -70,6 +76,104 @@ namespace IsleServerLauncher
         private void btnTroubleshooting_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("1. Client stuck connecting? Run InstallAntiCheat.bat in game folder.\n2. SSL Errors? Use the Help menu SSL fix.", "Troubleshooting");
+        }
+
+        internal async void btnCheckUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem item) item.IsEnabled = false;
+
+            try
+            {
+                await CheckForUpdatesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Update check failed:\n\n{ex.Message}", "Update Check", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (sender is MenuItem itemRestore) itemRestore.IsEnabled = true;
+            }
+        }
+
+        private async Task CheckForUpdatesAsync()
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, GitHubLatestReleaseApi);
+            request.Headers.UserAgent.ParseAdd("IsleServerLauncher/1.0");
+            request.Headers.Accept.ParseAdd("application/vnd.github+json");
+
+            using var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show($"Update check failed: {response.StatusCode}", "Update Check", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            string latestTag = doc.RootElement.TryGetProperty("tag_name", out var tagEl) ? (tagEl.GetString() ?? "") : "";
+            string latestUrl = doc.RootElement.TryGetProperty("html_url", out var urlEl) ? (urlEl.GetString() ?? GitHubReleasesPage) : GitHubReleasesPage;
+
+            var currentVersion = GetCurrentVersion();
+            var latestVersion = ParseVersion(latestTag);
+
+            if (currentVersion != null && latestVersion != null)
+            {
+                if (latestVersion > currentVersion)
+                {
+                    var result = MessageBox.Show(
+                        $"A new version is available.\n\nCurrent: v{currentVersion}\nLatest: v{latestVersion}\n\nOpen download page?",
+                        "Update Available",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Information);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Process.Start(new ProcessStartInfo { FileName = latestUrl, UseShellExecute = true });
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"You're up to date.\n\nCurrent: v{currentVersion}", "Update Check",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                return;
+            }
+
+            var fallbackResult = MessageBox.Show(
+                $"Latest release: {latestTag}\n\nOpen download page?",
+                "Update Check",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+            if (fallbackResult == MessageBoxResult.Yes)
+            {
+                Process.Start(new ProcessStartInfo { FileName = latestUrl, UseShellExecute = true });
+            }
+        }
+
+        private Version? GetCurrentVersion()
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            if (version != null) return version;
+
+            return ParseVersion(Title);
+        }
+
+        private static Version? ParseVersion(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            string cleaned = value.Trim();
+            if (cleaned.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned[1..];
+            }
+
+            if (Version.TryParse(cleaned, out var v))
+            {
+                return v;
+            }
+
+            var match = System.Text.RegularExpressions.Regex.Match(cleaned, @"\d+(\.\d+)+");
+            return match.Success && Version.TryParse(match.Value, out v) ? v : null;
         }
 
         internal void btnOpenAiAdminUi_Click(object sender, RoutedEventArgs e)
