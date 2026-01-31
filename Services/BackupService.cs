@@ -10,7 +10,7 @@ namespace IsleServerLauncher.Services
     {
         private readonly string _serverFolder;
         private readonly ILogger _logger;
-        private Timer? _backupTimer;
+        private System.Threading.Timer? _backupTimer;
         private bool _isEnabled;
         private int _intervalHours;
         private DateTime _nextBackupTime;
@@ -56,7 +56,7 @@ namespace IsleServerLauncher.Services
             _logger.Info($"Automatic backups enabled: Every {_intervalHours} hours");
             _logger.Info($"Next backup scheduled for: {_nextBackupTime:yyyy-MM-dd HH:mm:ss}");
 
-            _backupTimer = new Timer(CheckBackupTime, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+            _backupTimer = new System.Threading.Timer(CheckBackupTime, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
         }
 
         /// <summary>
