@@ -56,6 +56,8 @@ namespace IsleServerLauncher
                     chkScheduledRestartEnabled, cmbRestartInterval, cmbWarningMinutes,
                     txtRestartMessage, chkRestartScriptEnabled, txtRestartScriptPath, txtRestartScriptDelaySeconds,
                     chkEnableDiscordWebhook, txtDiscordWebhookUrl, txtDiscordInvite,
+                    txtModLoaderPath, txtModDllPath, txtModConfigDir,
+                    rdoInjectBuiltIn, rdoInjectBat, chkAutoInjectAfterRestart, txtAutoInjectDelaySeconds,
                     chkAutoBackupEnabled, cmbBackupInterval,
                     chkEnableChatMonitor, chkEnableChatWebhook, txtChatWebhookUrl,
                     txtAdminSteamIds, txtWhitelistIds, txtVipIds, lstDinos, lstDisallowedAI,
