@@ -124,7 +124,7 @@ namespace IsleServerLauncher
 
             stackPanel.Children.Add(new TextBlock
             {
-                Text = "Version: 1.0.1",
+                Text = "Version: 1.0.2",
                 Margin = new Thickness(0, 0, 0, 10)
             });
 
