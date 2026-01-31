@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace IsleServerLauncher
 {
@@ -53,7 +54,7 @@ namespace IsleServerLauncher
                     chkValidateFiles, chkDisableStreaming, cmbPriority, chkUseAllCores, pnlCpuCores,
                     chkEnableCrashDetection, chkAutoRestart, cmbMaxRestartAttempts,
                     chkScheduledRestartEnabled, cmbRestartInterval, cmbWarningMinutes,
-                    txtRestartMessage,
+                    txtRestartMessage, chkRestartScriptEnabled, txtRestartScriptPath, txtRestartScriptDelaySeconds,
                     chkEnableDiscordWebhook, txtDiscordWebhookUrl, txtDiscordInvite,
                     chkAutoBackupEnabled, cmbBackupInterval,
                     chkEnableChatMonitor, chkEnableChatWebhook, txtChatWebhookUrl,
@@ -117,6 +118,20 @@ namespace IsleServerLauncher
         private void btnSaveConfig_Click(object sender, RoutedEventArgs e)
         {
             SaveSettings(false);
+        }
+
+        private void btnBrowseRestartScript_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Batch Files (*.bat)|*.bat|All Files (*.*)|*.*",
+                Title = "Select Post-Restart Script"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                txtRestartScriptPath.Text = dialog.FileName;
+            }
         }
 
         // ==========================================
