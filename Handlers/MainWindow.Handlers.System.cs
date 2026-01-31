@@ -72,7 +72,7 @@ namespace IsleServerLauncher
             MessageBox.Show("1. Client stuck connecting? Run InstallAntiCheat.bat in game folder.\n2. SSL Errors? Use the Help menu SSL fix.", "Troubleshooting");
         }
 
-        private void btnOpenAiAdminUi_Click(object sender, RoutedEventArgs e)
+        internal void btnOpenAiAdminUi_Click(object sender, RoutedEventArgs e)
         {
             string toolPath = Path.Combine(_serverFolder, "tools", "AiAdminUi", "AiAdminUi.exe");
             if (!File.Exists(toolPath))
@@ -124,7 +124,7 @@ namespace IsleServerLauncher
 
             stackPanel.Children.Add(new TextBlock
             {
-                Text = "Version: 1.0.2",
+                Text = "Version: 1.0.3",
                 Margin = new Thickness(0, 0, 0, 10)
             });
 
