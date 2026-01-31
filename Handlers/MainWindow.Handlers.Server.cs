@@ -160,6 +160,8 @@ namespace IsleServerLauncher
             UpdateMaintenanceTimers();
 
             _serverManager.ResetRestartCounter();
+
+            await RunPostRestartScriptIfNeededAsync();
         }
 
         private async Task HandleServerStopAsync()
