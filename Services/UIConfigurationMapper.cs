@@ -39,6 +39,8 @@ namespace IsleServerLauncher.Services
             CheckBox chkScheduledRestartEnabled, ComboBox cmbRestartInterval, ComboBox cmbWarningMinutes,
             TextBox txtRestartMessage, CheckBox chkRestartScriptEnabled, TextBox txtRestartScriptPath, TextBox txtRestartScriptDelaySeconds,
             CheckBox chkEnableDiscordWebhook, TextBox txtDiscordWebhookUrl, TextBox txtDiscordInvite,
+            TextBox txtModLoaderPath, TextBox txtModDllPath, TextBox txtModConfigDir,
+            RadioButton rdoInjectBuiltIn, RadioButton rdoInjectBat, CheckBox chkAutoInjectAfterRestart, TextBox txtAutoInjectDelaySeconds,
             CheckBox chkAutoBackupEnabled, ComboBox cmbBackupInterval,
             CheckBox chkEnableChatMonitor, CheckBox chkEnableChatWebhook, TextBox txtChatWebhookUrl,
             TextBox txtAdminSteamIds, TextBox txtWhitelistIds, TextBox txtVipIds, ListBox lstDinos, ListBox lstDisallowedAI,
@@ -171,6 +173,13 @@ namespace IsleServerLauncher.Services
                 chkEnableDiscordWebhook.IsChecked = config.EnableDiscordWebhook;
                 txtDiscordWebhookUrl.Text = config.DiscordWebhookUrl;
                 txtDiscordInvite.Text = config.DiscordInvite;
+                txtModLoaderPath.Text = config.ModLoaderPath;
+                txtModDllPath.Text = config.ModDllPath;
+                txtModConfigDir.Text = config.ModConfigDir;
+                rdoInjectBuiltIn.IsChecked = !config.UseModBatInjection;
+                rdoInjectBat.IsChecked = config.UseModBatInjection;
+                chkAutoInjectAfterRestart.IsChecked = config.AutoInjectAfterRestart;
+                txtAutoInjectDelaySeconds.Text = config.AutoInjectDelaySeconds.ToString();
                 chkAutoBackupEnabled.IsChecked = config.AutoBackupEnabled;
                 cmbBackupInterval.SelectedIndex = config.BackupIntervalHours switch
                 {
@@ -277,6 +286,8 @@ namespace IsleServerLauncher.Services
             CheckBox chkScheduledRestartEnabled, ComboBox cmbRestartInterval, ComboBox cmbWarningMinutes,
             TextBox txtRestartMessage, CheckBox chkRestartScriptEnabled, TextBox txtRestartScriptPath, TextBox txtRestartScriptDelaySeconds,
             CheckBox chkEnableDiscordWebhook, TextBox txtDiscordWebhookUrl, TextBox txtDiscordInvite,
+            TextBox txtModLoaderPath, TextBox txtModDllPath, TextBox txtModConfigDir,
+            RadioButton rdoInjectBuiltIn, RadioButton rdoInjectBat, CheckBox chkAutoInjectAfterRestart, TextBox txtAutoInjectDelaySeconds,
             CheckBox chkAutoBackupEnabled, ComboBox cmbBackupInterval,
             CheckBox chkEnableChatMonitor, CheckBox chkEnableChatWebhook, TextBox txtChatWebhookUrl,
             TextBox txtAdminSteamIds, TextBox txtWhitelistIds, TextBox txtVipIds, ListBox lstDinos, ListBox lstDisallowedAI,
@@ -404,6 +415,12 @@ namespace IsleServerLauncher.Services
                 EnableDiscordWebhook = chkEnableDiscordWebhook.IsChecked.GetValueOrDefault(),
                 DiscordWebhookUrl = txtDiscordWebhookUrl.Text ?? "",
                 DiscordInvite = txtDiscordInvite.Text ?? "",
+                ModLoaderPath = txtModLoaderPath.Text ?? "",
+                ModDllPath = txtModDllPath.Text ?? "",
+                ModConfigDir = txtModConfigDir.Text ?? "",
+                UseModBatInjection = rdoInjectBat.IsChecked == true,
+                AutoInjectAfterRestart = chkAutoInjectAfterRestart.IsChecked.GetValueOrDefault(),
+                AutoInjectDelaySeconds = int.TryParse(txtAutoInjectDelaySeconds.Text, out int autoInjectDelay) ? autoInjectDelay : 5,
                 AdminSteamIds = txtAdminSteamIds.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).ToList(),
                 WhitelistIds = txtWhitelistIds.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).ToList(),
                 VipIds = txtVipIds.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(id => id.Trim()).ToList(),
