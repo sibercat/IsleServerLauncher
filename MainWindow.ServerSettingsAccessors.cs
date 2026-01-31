@@ -1,39 +1,46 @@
-using System.Windows.Controls;
+using WpfTextBox = System.Windows.Controls.TextBox;
 
 namespace IsleServerLauncher
 {
     public partial class MainWindow
     {
-        private TextBox txtServerName => serverSettingsView.txtServerName;
-        private TextBox txtMaxPlayers => serverSettingsView.txtMaxPlayers;
-        private TextBox txtServerPass => serverSettingsView.txtServerPass;
-        private TextBox txtRconPass => serverSettingsView.txtRconPass;
-        private TextBox txtRconPort => serverSettingsView.txtRconPort;
-        private TextBox txtGamePort => serverSettingsView.txtGamePort;
-        private TextBox txtQueuePort => serverSettingsView.txtQueuePort;
-        private TextBox txtCustomArgs => serverSettingsView.txtCustomArgs;
-        private TextBox txtDayLength => serverSettingsView.txtDayLength;
-        private TextBox txtNightLength => serverSettingsView.txtNightLength;
-        private TextBox txtGrowth => serverSettingsView.txtGrowth;
-        private TextBox txtDecay => serverSettingsView.txtDecay;
-        private TextBox txtMigrationTime => serverSettingsView.txtMigrationTime;
-        private TextBox txtAISpawn => serverSettingsView.txtAISpawn;
-        private TextBox txtAIDensity => serverSettingsView.txtAIDensity;
-        private TextBox txtRegionSpawnCooldown => serverSettingsView.txtRegionSpawnCooldown;
-        private TextBox txtPlantSpawnMultiplier => serverSettingsView.txtPlantSpawnMultiplier;
-        private TextBox txtMassMigrationTime => serverSettingsView.txtMassMigrationTime;
-        private TextBox txtMassMigrationDisableTime => serverSettingsView.txtMassMigrationDisableTime;
-        private TextBox txtSpeciesMigrationTime => serverSettingsView.txtSpeciesMigrationTime;
-        private TextBox txtMinWeatherVariationInterval => serverSettingsView.txtMinWeatherVariationInterval;
-        private TextBox txtMaxWeatherVariationInterval => serverSettingsView.txtMaxWeatherVariationInterval;
-        private TextBox txtQueueJoinTimeoutSeconds => serverSettingsView.txtQueueJoinTimeoutSeconds;
-        private TextBox txtQueueHeartbeatIntervalSeconds => serverSettingsView.txtQueueHeartbeatIntervalSeconds;
-        private TextBox txtQueueHeartbeatTimeoutSeconds => serverSettingsView.txtQueueHeartbeatTimeoutSeconds;
-        private TextBox txtQueueHeartbeatMaxMisses => serverSettingsView.txtQueueHeartbeatMaxMisses;
-        private TextBox txtAdminSteamIds => serverSettingsView.txtAdminSteamIds;
-        private TextBox txtWhitelistIds => serverSettingsView.txtWhitelistIds;
-        private TextBox txtVipIds => serverSettingsView.txtVipIds;
-        private TextBox txtDiscordInvite => serverSettingsView.txtDiscordInvite;
+        private WpfTextBox txtServerName => serverSettingsView.txtServerName;
+        private WpfTextBox txtMaxPlayers => serverSettingsView.txtMaxPlayers;
+        private WpfTextBox txtServerPass => serverSettingsView.txtServerPass;
+        private WpfTextBox txtRconPass => serverSettingsView.txtRconPass;
+        private WpfTextBox txtRconPort => serverSettingsView.txtRconPort;
+        private WpfTextBox txtGamePort => serverSettingsView.txtGamePort;
+        private WpfTextBox txtQueuePort => serverSettingsView.txtQueuePort;
+        private WpfTextBox txtCustomArgs => serverSettingsView.txtCustomArgs;
+        private WpfTextBox txtDayLength => serverSettingsView.txtDayLength;
+        private WpfTextBox txtNightLength => serverSettingsView.txtNightLength;
+        private WpfTextBox txtGrowth => serverSettingsView.txtGrowth;
+        private WpfTextBox txtDecay => serverSettingsView.txtDecay;
+        private WpfTextBox txtMigrationTime => serverSettingsView.txtMigrationTime;
+        private WpfTextBox txtAISpawn => serverSettingsView.txtAISpawn;
+        private WpfTextBox txtAIDensity => serverSettingsView.txtAIDensity;
+        private WpfTextBox txtRegionSpawnCooldown => serverSettingsView.txtRegionSpawnCooldown;
+        private WpfTextBox txtPlantSpawnMultiplier => serverSettingsView.txtPlantSpawnMultiplier;
+        private WpfTextBox txtMassMigrationTime => serverSettingsView.txtMassMigrationTime;
+        private WpfTextBox txtMassMigrationDisableTime => serverSettingsView.txtMassMigrationDisableTime;
+        private WpfTextBox txtSpeciesMigrationTime => serverSettingsView.txtSpeciesMigrationTime;
+        private WpfTextBox txtMinWeatherVariationInterval => serverSettingsView.txtMinWeatherVariationInterval;
+        private WpfTextBox txtMaxWeatherVariationInterval => serverSettingsView.txtMaxWeatherVariationInterval;
+        private WpfTextBox txtQueueJoinTimeoutSeconds => serverSettingsView.txtQueueJoinTimeoutSeconds;
+        private WpfTextBox txtQueueHeartbeatIntervalSeconds => serverSettingsView.txtQueueHeartbeatIntervalSeconds;
+        private WpfTextBox txtQueueHeartbeatTimeoutSeconds => serverSettingsView.txtQueueHeartbeatTimeoutSeconds;
+        private WpfTextBox txtQueueHeartbeatMaxMisses => serverSettingsView.txtQueueHeartbeatMaxMisses;
+        private WpfTextBox txtAdminSteamIds => serverSettingsView.txtAdminSteamIds;
+        private WpfTextBox txtWhitelistIds => serverSettingsView.txtWhitelistIds;
+        private WpfTextBox txtVipIds => serverSettingsView.txtVipIds;
+        private WpfTextBox txtDiscordInvite => serverSettingsView.txtDiscordInvite;
+        private WpfTextBox txtModLoaderPath => serverSettingsView.txtModLoaderPath;
+        private WpfTextBox txtModDllPath => serverSettingsView.txtModDllPath;
+        private WpfTextBox txtModConfigDir => serverSettingsView.txtModConfigDir;
+        private WpfTextBox txtModLog => serverSettingsView.txtModLog;
+        private WpfTextBox txtAutoInjectDelaySeconds => serverSettingsView.txtAutoInjectDelaySeconds;
+        private RadioButton rdoInjectBuiltIn => serverSettingsView.rdoInjectBuiltIn;
+        private RadioButton rdoInjectBat => serverSettingsView.rdoInjectBat;
 
         private CheckBox chkEnableRcon => serverSettingsView.chkEnableRcon;
         private CheckBox chkWhitelist => serverSettingsView.chkWhitelist;
@@ -52,6 +59,7 @@ namespace IsleServerLauncher
         private CheckBox chkEnableDiets => serverSettingsView.chkEnableDiets;
         private CheckBox chkEnablePatrolZones => serverSettingsView.chkEnablePatrolZones;
         private CheckBox chkEnableMassMigration => serverSettingsView.chkEnableMassMigration;
+        private CheckBox chkAutoInjectAfterRestart => serverSettingsView.chkAutoInjectAfterRestart;
 
         private CheckBox chkEnableLogRedpointEOSVerbose => serverSettingsView.chkEnableLogRedpointEOSVerbose;
         private CheckBox chkEnableLogOnlineVerbose => serverSettingsView.chkEnableLogOnlineVerbose;
