@@ -251,6 +251,8 @@ namespace IsleServerLauncher
                 chkScheduledRestartEnabled, cmbRestartInterval, cmbWarningMinutes,
                 txtRestartMessage, chkRestartScriptEnabled, txtRestartScriptPath, txtRestartScriptDelaySeconds,
                 chkEnableDiscordWebhook, txtDiscordWebhookUrl, txtDiscordInvite,
+                txtModLoaderPath, txtModDllPath, txtModConfigDir,
+                rdoInjectBuiltIn, rdoInjectBat, chkAutoInjectAfterRestart, txtAutoInjectDelaySeconds,
                 chkAutoBackupEnabled, cmbBackupInterval,
                 chkEnableChatMonitor, chkEnableChatWebhook, txtChatWebhookUrl,
                 txtAdminSteamIds, txtWhitelistIds, txtVipIds, lstDinos, lstDisallowedAI,
@@ -328,6 +330,8 @@ namespace IsleServerLauncher
                     chkEnableCrashDetection, chkAutoRestart, cmbMaxRestartAttempts,
                     chkScheduledRestartEnabled, cmbRestartInterval, cmbWarningMinutes, txtRestartMessage, chkRestartScriptEnabled, txtRestartScriptPath, txtRestartScriptDelaySeconds,
                     chkEnableDiscordWebhook, txtDiscordWebhookUrl, txtDiscordInvite,
+                    txtModLoaderPath, txtModDllPath, txtModConfigDir,
+                    rdoInjectBuiltIn, rdoInjectBat, chkAutoInjectAfterRestart, txtAutoInjectDelaySeconds,
                     chkAutoBackupEnabled, cmbBackupInterval,
                     chkEnableChatMonitor, chkEnableChatWebhook, txtChatWebhookUrl,
                     txtAdminSteamIds, txtWhitelistIds, txtVipIds, lstDinos, lstDisallowedAI,
@@ -438,7 +442,7 @@ namespace IsleServerLauncher
         private void InitializeDirtyTracking()
         {
             _saveButtonNormalBrush = btnSaveConfig.Background;
-            AddHandler(TextBox.TextChangedEvent, new TextChangedEventHandler(OnSettingTextChanged));
+            AddHandler(System.Windows.Controls.TextBox.TextChangedEvent, new TextChangedEventHandler(OnSettingTextChanged));
             AddHandler(ToggleButton.CheckedEvent, new RoutedEventHandler(OnSettingToggleChanged));
             AddHandler(ToggleButton.UncheckedEvent, new RoutedEventHandler(OnSettingToggleChanged));
             AddHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(OnSettingSelectionChanged));
@@ -457,7 +461,7 @@ namespace IsleServerLauncher
         {
             if (_isLoadingConfig) return;
             if (ShouldIgnoreDirtyEvent(e.OriginalSource)) return;
-            if (e.OriginalSource is TextBox tb && tb.IsReadOnly) return;
+            if (e.OriginalSource is System.Windows.Controls.TextBox tb && tb.IsReadOnly) return;
             UpdateDirtyState();
         }
 
@@ -555,6 +559,12 @@ namespace IsleServerLauncher
             sb.Append(config.RestartScriptPath).Append('|');
             sb.Append(config.RestartScriptDelaySeconds).Append('|');
             sb.Append(config.RestartScriptEnabled).Append('|');
+            sb.Append(config.ModLoaderPath).Append('|');
+            sb.Append(config.ModDllPath).Append('|');
+            sb.Append(config.ModConfigDir).Append('|');
+            sb.Append(config.UseModBatInjection).Append('|');
+            sb.Append(config.AutoInjectAfterRestart).Append('|');
+            sb.Append(config.AutoInjectDelaySeconds).Append('|');
             sb.Append(config.EnableDiscordWebhook).Append('|');
             sb.Append(config.DiscordWebhookUrl).Append('|');
             sb.Append(config.DiscordInvite).Append('|');
@@ -816,10 +826,37 @@ namespace IsleServerLauncher
             _scheduledRestartScriptPending = false;
 
             var config = GetCurrentConfiguration();
+            bool autoInjectRan = false;
+            if (config.AutoInjectAfterRestart)
+            {
+                int autoDelaySeconds = Math.Max(0, config.AutoInjectDelaySeconds);
+                if (autoDelaySeconds > 0)
+                {
+                    _logger.Info($"Delaying auto-inject by {autoDelaySeconds} seconds.");
+                    await Task.Delay(TimeSpan.FromSeconds(autoDelaySeconds));
+                }
+
+                autoInjectRan = config.UseModBatInjection
+                    ? TryRunModBatInjection(showUi: false)
+                    : TryInjectModWithLoader(showUi: false);
+            }
+
             if (!config.RestartScriptEnabled) return;
             if (string.IsNullOrWhiteSpace(config.RestartScriptPath)) return;
 
             string scriptPath = config.RestartScriptPath.Trim();
+            if (config.AutoInjectAfterRestart && config.UseModBatInjection)
+            {
+                string autoScript = GetAutoInjectScriptPath();
+                if (string.Equals(scriptPath, autoScript, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (autoInjectRan)
+                    {
+                        _logger.Info("Skipping post-restart script because auto-inject already ran StartServerWithMod.bat.");
+                    }
+                    return;
+                }
+            }
             if (!File.Exists(scriptPath))
             {
                 _logger.Warning($"Post-restart script not found: {scriptPath}");
